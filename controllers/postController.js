@@ -1,6 +1,7 @@
 const Post = require('../models/Post');
 const { createError } = require('../util/helperFunctions');
 const { post_validation } = require('../validation/postValidation');
+const User = require('../models/User');
 
 exports.get_posts = async (req, res, next) => {
 
@@ -56,9 +57,9 @@ exports.create_post = async (req, res, next) => {
 
     const { title, content } = req.body;
 
-    const author = req.userId;
-    
     try {
+        const author = await User.findById(req.userId);
+
         const { error } = post_validation.validate({title, content});
         if(error){
             return res.status(400).send({
@@ -70,13 +71,18 @@ exports.create_post = async (req, res, next) => {
         const post = await Post.create({
             title,
             content,
-            author
+            author:author._id
         });
-
+        author.posts.push(post._id);
+        const addedToUserPosts = await author.save();
+        if(!addedToUserPosts){
+            createError('There was a problem with saving your posts', 500);
+        }
         res.status(201).json({
             msg:"success",
             post:post._id
         })
+     
 
     } catch (error) {
         
