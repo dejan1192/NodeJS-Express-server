@@ -7,11 +7,11 @@ exports.get_posts = async (req, res, next) => {
     try {
         
         const posts = await Post.find()
-                                .populate({
+                            .populate({
                                     path:'author',
                                     select:'-password'
                                 })
-                                .sort({createdAt: -1});
+                             .sort({createdAt: -1});
 
         res.status(200).json({
             msg:"success",
@@ -30,8 +30,11 @@ exports.get_post = async (req, res, next) => {
     try {
         
         const post = await Post.findById(postId)
-                               .populate('user');
-        
+                                .populate({
+                                    path:'author',
+                                    select:'-password'
+                                })
+                                
 
         if(!post){
 
@@ -79,4 +82,8 @@ exports.create_post = async (req, res, next) => {
         
         next(error);
     }
+};
+
+exports.delete_post = (req, res, next) => {
+
 };
