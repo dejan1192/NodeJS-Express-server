@@ -61,7 +61,7 @@ exports.create_post = async (req, res, next) => {
     try {
         const { error } = post_validation.validate({title, content});
         if(error){
-            res.status(400).send({
+            return res.status(400).send({
                 validationError:error.details[0].message
             })
  
@@ -93,8 +93,13 @@ exports.delete_post = async (req, res, next) => {
         if(!post){
             createError('Post not found!', 404);
         }
+        
+        if(req.userId.toString() !== post.author.toString()){
+            createError('Not Authorized !', 403)
+        }
+
         const deleted = await post.remove();
-        console.log(deleted);
+        
         res.json({
             msg:"success",
             deleted_post:deleted._id

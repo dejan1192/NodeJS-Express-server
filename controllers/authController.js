@@ -9,7 +9,7 @@ exports.post_login = async(req, res, next) => {
    try {
         const { error } = login_validation.validate({email, password});
         if(error){
-            res.status(400).send({
+          return res.status(400).send({
                 validationError:error.details[0].message
             })
  
@@ -42,7 +42,7 @@ exports.post_register = async (req, res, next) => {
         const { error} = register_validation.validate({name, email, password});
       
         if(error){
-            res.status(400).send({
+           return res.status(400).send({
                 validationError:error.details[0].message
             })
  
