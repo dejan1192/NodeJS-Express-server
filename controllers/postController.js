@@ -93,8 +93,10 @@ exports.create_post = async (req, res, next) => {
 exports.delete_post = async (req, res, next) => {
 
     const postId = req.params.id;
+   
 
     try {
+        const user = await User.findById(req.userId);
         const post = await Post.findById(postId);
         if(!post){
             createError('Post not found!', 404);
@@ -105,7 +107,14 @@ exports.delete_post = async (req, res, next) => {
         }
 
         const deleted = await post.remove();
-        
+      
+        user.posts.pull({_id:deleted._id});
+        const removedFromUserPosts = user.save();
+
+        if(!removedFromUserPosts){
+            createError('There was a problem updating your posts list', 500);
+        }
+
         res.json({
             msg:"success",
             deleted_post:deleted._id
