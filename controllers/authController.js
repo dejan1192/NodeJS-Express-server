@@ -66,7 +66,7 @@ exports.post_register = async (req, res, next) => {
 exports.get_user = async (req, res, next) => {
 
     try {
-        const user = await User.findById(req.userId).select('-password');
+        const user = await User.findById(req.userId).select('-password').populate('posts');
 
         if(!user){
             createError('User not found', 404);
