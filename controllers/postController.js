@@ -84,6 +84,24 @@ exports.create_post = async (req, res, next) => {
     }
 };
 
-exports.delete_post = (req, res, next) => {
+exports.delete_post = async (req, res, next) => {
 
+    const postId = req.params.id;
+
+    try {
+        const post = await Post.findById(postId);
+        if(!post){
+            createError('Post not found!', 404);
+        }
+        const deleted = await post.remove();
+        console.log(deleted);
+        res.json({
+            msg:"success",
+            deleted_post:deleted._id
+        })
+
+    } catch (error) {
+        
+        next(error);
+    }
 };
