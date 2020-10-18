@@ -15,7 +15,6 @@ exports.get_posts = async (req, res, next) => {
                              .sort({createdAt: -1});
 
         res.status(200).json({
-            msg:"success",
             posts
         })
     } catch (error) {
@@ -43,7 +42,6 @@ exports.get_post = async (req, res, next) => {
         }
 
         res.status(200).json({
-            msg:"success",
             post
         })
 
@@ -79,8 +77,7 @@ exports.create_post = async (req, res, next) => {
             createError('There was a problem with saving your posts', 500);
         }
         res.status(201).json({
-            msg:"success",
-            post:post._id
+            post:post
         })
      
 
