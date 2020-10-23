@@ -4,7 +4,6 @@ exports.register_validation = Joi.object({
 
     name:Joi.string()
             .trim()
-            .alphanum()
             .min(2)
             .max(40)
             .required(),
