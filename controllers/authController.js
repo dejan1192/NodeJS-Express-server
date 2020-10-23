@@ -5,13 +5,13 @@ const { register_validation, login_validation } = require('../validation/userVal
 exports.post_login = async(req, res, next) => {
 
     const { email, password } = req.body;
+   
 
    try {
         const { error } = login_validation.validate({email, password});
         if(error){
-          return res.status(400).send({
-                validationError:error.details[0].message
-            })
+         
+            createError(error.details[0].message, 400);
  
          }
 
@@ -37,14 +37,13 @@ exports.post_login = async(req, res, next) => {
 exports.post_register = async (req, res, next) => {
 
     const { name, email, password } = req.body;
-
+   
     try {
         const { error} = register_validation.validate({name, email, password});
       
         if(error){
-           return res.status(400).send({
-                validationError:error.details[0].message
-            })
+      
+        createError(error.details[0].message, 400);
  
          }
         const found = await User.findOne({email});
@@ -90,3 +89,4 @@ exports.get_logout = (req, res, next) => {
         msg:"success"
     })
 };
+
