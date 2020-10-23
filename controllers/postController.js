@@ -13,9 +13,14 @@ exports.get_posts = async (req, res, next) => {
                                     select:'-password'
                                 })
                              .sort({createdAt: -1});
+        const recentPosts = await Post.find().populate({
+            path:'author',
+            select:'-password'
+        }).sort({createdAt:-1}).limit(3);
 
         res.status(200).json({
-            posts
+            posts,
+            recentPosts
         })
     } catch (error) {
         
@@ -52,30 +57,37 @@ exports.get_post = async (req, res, next) => {
 }
 
 exports.create_post = async (req, res, next) => {
-
+   
+   
     const { title, content } = req.body;
+    const image = req.file;
+    
 
     try {
         const author = await User.findById(req.userId);
-
+      const authorId = author._id;
         const { error } = post_validation.validate({title, content});
         if(error){
-            return res.status(400).send({
-                validationError:error.details[0].message
-            })
+           
+            createError(error.details[0].message, 400);
  
          }
+
 
         const post = await Post.create({
             title,
             content,
-            author:author._id
+            author:authorId
         });
+       
         author.posts.push(post._id);
-        const addedToUserPosts = await author.save();
-        if(!addedToUserPosts){
+        const postAuthor = await author.save();
+        if(!author){
             createError('There was a problem with saving your posts', 500);
         }
+
+        post.author = postAuthor;
+       
         res.status(201).json({
             post:post
         })
@@ -122,3 +134,4 @@ exports.delete_post = async (req, res, next) => {
         next(error);
     }
 };
+
