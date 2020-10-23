@@ -65,21 +65,26 @@ exports.create_post = async (req, res, next) => {
 
     try {
         const author = await User.findById(req.userId);
-      const authorId = author._id;
+       const authorId = author._id;
         const { error } = post_validation.validate({title, content});
         if(error){
            
             createError(error.details[0].message, 400);
  
          }
+      
 
-
-        const post = await Post.create({
+        const newPost = await Post.create({
             title,
             content,
             author:authorId
         });
-       
+        if(image) {
+            newPost.imageUrl = image.filename;
+          
+        }
+        
+        const post = await newPost.save();
         author.posts.push(post._id);
         const postAuthor = await author.save();
         if(!author){
